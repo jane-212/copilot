@@ -49,14 +49,7 @@ jobs:
       - name: Set target variables
         shell: bash
         run: |
-          echo "TARGET_FLAGS=--target aarch64-unknown-linux-musl" >> $GITHUB_ENV
-          echo "TARGET_DIR=./target/aarch64-unknown-linux-musl" >> $GITHUB_ENV
-
-      - name: Show command used for Cargo
-        shell: bash
-        run: |
-          echo "target flag is: ${{ env.TARGET_FLAGS }}"
-          echo "target dir is: ${{ env.TARGET_DIR }}"
+          echo "TARGET=aarch64-unknown-linux-musl" >> $GITHUB_ENV
 
       - name: Install dependencies
         shell: bash
@@ -66,8 +59,8 @@ jobs:
       - name: Build release binary
         shell: bash
         run: |
-          cargo build --verbose --release ${{ env.TARGET_FLAGS }}
-          bin="target/aarch64-unknown-linux-musl/release/javcap"
+          cargo build --verbose --release --target ${{ env.TARGET }}
+          bin="target/${{ env.TARGET }}/release/copilot"
           echo "BIN=$bin" >> $GITHUB_ENV
 
       - name: Determine archive name
