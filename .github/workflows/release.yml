@@ -59,7 +59,8 @@ jobs:
       - name: Build release binary
         shell: bash
         run: |
-          cargo build --verbose --release --target ${{ env.TARGET }}
+          cargo install cross
+          cross build --verbose --release --target ${{ env.TARGET }}
           bin="target/${{ env.TARGET }}/release/copilot"
           echo "BIN=$bin" >> $GITHUB_ENV
 
