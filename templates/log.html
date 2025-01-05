@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+.error {
+    color: #f6416c;
+}
+.warn {
+    color: #ffde7d;
+}
+.info {
+    color: #00b8a9;
+}
+.log {
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.title {
+    font-weight: bold;
+    text-align: center;
+}
+</style>
+{% endblock head %}
+
+{% block body %}
+<p class="title">过去{{count}}天的日志</p>
+{% for log in logs %}
+    {% if log.level == "error" %}
+        <p class="error log">{{log.content}}</p>
+    {% endif %}
+    {% if log.level == "warn" %}
+        <p class="warn log">{{log.content}}</p>
+    {% endif %}
+    {% if log.level == "info" %}
+        <p class="info log">{{log.content}}</p>
+    {% endif %}
+{% endfor %}
+{% endblock body %}
