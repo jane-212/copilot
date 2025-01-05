@@ -5,5 +5,9 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.95"
-reqwest = { version = "0.12.12", default-features = false, features = ["rustls-tls"] }
+async-openai = "0.26.0"
+async-trait = "0.1.84"
+lettre = { version = "0.11.11", default-features = false, features = ["builder", "smtp-transport", "tokio1-rustls-tls"] }
+reqwest = { version = "0.12.12", default-features = false, features = ["rustls-tls", "charset", "http2"] }
 tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread"] }
+tokio-cron-scheduler = { version = "0.13.0", features = ["signal"] }
