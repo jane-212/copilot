@@ -42,6 +42,8 @@ impl Helper {
         log::info!("new template base.html");
         tera.add_raw_template("error.html", include_str!("../../templates/error.html"))?;
         log::info!("new template error.html");
+        tera.add_raw_template("github.html", include_str!("../../templates/github.html"))?;
+        log::info!("new template github.html");
 
         Ok(tera)
     }

@@ -5,11 +5,17 @@ pub struct Jina {
     client: Client,
 }
 
-impl Jina {
-    pub fn new() -> Self {
+impl Default for Jina {
+    fn default() -> Self {
         let client = Client::new();
 
         Self { client }
+    }
+}
+
+impl Jina {
+    pub fn new() -> Self {
+        Self::default()
     }
 
     pub async fn summary(
