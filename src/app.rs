@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use anyhow::{Context, Result};
 use tokio::signal::unix::{signal, SignalKind};
-use tokio_cron_scheduler::{Job, JobScheduler};
+use tokio_cron_scheduler::{JobBuilder, JobScheduler};
 
 use super::helper::Helper;
 use super::task::Task;
@@ -35,8 +35,11 @@ impl App {
         let mut sched = JobScheduler::new().await?;
         let tasks = self.all_tasks();
         for task in tasks {
-            sched
-                .add(Job::new_async(task.job(), {
+            let job = JobBuilder::new()
+                .with_timezone(chrono_tz::Asia::Shanghai)
+                .with_cron_job_type()
+                .with_schedule(task.job())?
+                .with_run_async(Box::new({
                     let helper = self.helper.clone();
                     move |_, _| {
                         let task = task.clone();
@@ -52,8 +55,9 @@ impl App {
                             }
                         })
                     }
-                })?)
-                .await?;
+                }))
+                .build()?;
+            sched.add(job).await?;
         }
         sched.start().await?;
 
