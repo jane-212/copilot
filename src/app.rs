@@ -56,7 +56,7 @@ impl App {
                                 .context(format!("failed when {}", task.description()))
                             {
                                 Ok(_) => log::info!("finished {}", task.description()),
-                                Err(error) => log::error!("{:?}", error),
+                                Err(error) => log::error!("\n{:?}", error),
                             }
                         })
                     }
