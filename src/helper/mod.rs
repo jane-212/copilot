@@ -1,9 +1,11 @@
+mod jina;
 mod mail;
 mod openai;
 
 use std::env;
 
 use anyhow::Result;
+use jina::Jina;
 use mail::Mailer;
 use openai::Openai;
 use tera::Tera;
@@ -13,6 +15,7 @@ pub struct Helper {
     pub openai: Openai,
     pub deep_seek: Openai,
     pub tera: Tera,
+    pub jina: Jina,
 }
 
 impl Helper {
@@ -21,11 +24,13 @@ impl Helper {
         let openai = Self::new_openai()?;
         let deep_seek = Self::new_deep_seek()?;
         let tera = Self::new_tera()?;
+        let jina = Jina::new()?;
         let helper = Self {
             mailer,
             openai,
             deep_seek,
             tera,
+            jina,
         };
 
         Ok(helper)
@@ -35,6 +40,8 @@ impl Helper {
         let mut tera = Tera::default();
         tera.add_raw_template("base.html", include_str!("../../templates/base.html"))?;
         log::info!("new template base.html");
+        tera.add_raw_template("error.html", include_str!("../../templates/error.html"))?;
+        log::info!("new template error.html");
 
         Ok(tera)
     }

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use anyhow::{Context, Result};
+use anyhow::{Context, Error, Result};
 use tokio::signal::unix::{signal, SignalKind};
 use tokio_cron_scheduler::{JobBuilder, JobScheduler};
 
@@ -31,6 +31,17 @@ impl App {
         self.tasks.clone()
     }
 
+    async fn send_error(helper: Arc<Helper>, error: Error) -> Result<()> {
+        log::info!("start send error to email");
+        let mut context = tera::Context::new();
+        context.insert("error", &format!("{error:?}"));
+        let error_html = helper.tera.render("error.html", &context)?;
+        helper.mailer.send("Error detected", error_html).await?;
+        log::info!("send error to email completed");
+
+        Ok(())
+    }
+
     pub async fn start(self) -> Result<()> {
         log::info!("start app...");
         log::info!("app version: {}", env!("VERSION"));
@@ -56,7 +67,15 @@ impl App {
                                 .context(format!("failed when {}", task.description()))
                             {
                                 Ok(_) => log::info!("finished {}", task.description()),
-                                Err(error) => log::error!("\n{:?}", error),
+                                Err(error) => {
+                                    log::error!("\n{error:?}");
+                                    if let Err(err) = Self::send_error(helper, error)
+                                        .await
+                                        .context("send error to email")
+                                    {
+                                        log::error!("\n{err:?}");
+                                    }
+                                }
                             }
                         })
                     }

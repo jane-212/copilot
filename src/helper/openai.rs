@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use anyhow::{anyhow, Context, Result};
 use async_openai::config::OpenAIConfig;
 use async_openai::types::{
@@ -18,7 +20,10 @@ impl Openai {
         key: impl Into<String>,
     ) -> Result<Self> {
         let config = OpenAIConfig::new().with_api_base(base).with_api_key(key);
-        let client = Client::with_config(config);
+        let client = reqwest::Client::builder()
+            .timeout(Duration::from_secs(10))
+            .build()?;
+        let client = Client::with_config(config).with_http_client(client);
         let openai = Self {
             client,
             model: model.into(),
