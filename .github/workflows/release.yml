@@ -51,11 +51,6 @@ jobs:
         run: |
           echo "TARGET=aarch64-unknown-linux-musl" >> $GITHUB_ENV
 
-      - name: Install dependencies
-        shell: bash
-        run: |
-          sudo apt-get update
-
       - name: Build release binary
         shell: bash
         run: |
@@ -63,12 +58,13 @@ jobs:
           cross build --verbose --release --target ${{ env.TARGET }}
           bin="target/${{ env.TARGET }}/release/copilot"
           echo "BIN=$bin" >> $GITHUB_ENV
+        env:
+          VERSION: ${{ needs.create-release.outputs.version }}
 
       - name: Determine archive name
         shell: bash
         run: |
-          version="${{ needs.create-release.outputs.version }}"
-          echo "ARCHIVE=copilot-$version" >> $GITHUB_ENV
+          echo "ARCHIVE=copilot-${{ env.TARGET }}" >> $GITHUB_ENV
 
       - name: Creating directory for archive
         shell: bash

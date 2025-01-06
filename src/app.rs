@@ -32,9 +32,13 @@ impl App {
     }
 
     pub async fn start(self) -> Result<()> {
+        log::info!("start app...");
+        log::info!("app version: {}", env!("VERSION"));
         let mut sched = JobScheduler::new().await?;
         let tasks = self.all_tasks();
+        log::info!("totally found {} tasks", tasks.len());
         for task in tasks {
+            log::info!("add new job: {}({})", task.description(), task.job());
             let job = JobBuilder::new()
                 .with_timezone(chrono_tz::Asia::Shanghai)
                 .with_cron_job_type()
@@ -45,13 +49,14 @@ impl App {
                         let task = task.clone();
                         let helper = helper.clone();
                         Box::pin(async move {
-                            if let Err(error) = task
+                            log::info!("start {}", task.description());
+                            match task
                                 .run(helper.clone())
                                 .await
                                 .context(format!("failed when {}", task.description()))
                             {
-                                let mut logger = helper.logger.lock().await;
-                                logger.error(error.to_string());
+                                Ok(_) => log::info!("finished {}", task.description()),
+                                Err(error) => log::error!("{:?}", error),
                             }
                         })
                     }
@@ -59,15 +64,19 @@ impl App {
                 .build()?;
             sched.add(job).await?;
         }
+        log::info!("app started and wait for quit signal...");
         sched.start().await?;
 
         let mut terminate = signal(SignalKind::terminate())?;
         tokio::select! {
             _ = terminate.recv() => (),
         }
+        log::info!("received terminate signal");
 
+        log::info!("shutdown app...");
         sched.shutdown().await?;
 
+        log::info!("shutdown app successfully");
         Ok(())
     }
 }

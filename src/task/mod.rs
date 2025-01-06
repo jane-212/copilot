@@ -1,11 +1,9 @@
-pub mod log;
-
 use std::sync::Arc;
 
 use anyhow::Result;
 use async_trait::async_trait;
 
-use crate::helper::Helper;
+use super::helper::Helper;
 
 #[async_trait]
 pub trait Task: Send + Sync {

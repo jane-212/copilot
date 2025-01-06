@@ -1,15 +1,13 @@
-use std::sync::Arc;
-
 use anyhow::Result;
-use copilot::{task::log::Log, App};
+use copilot::App;
 use dotenvy::dotenv;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    dotenv().ok();
+    dotenv()?;
+    env_logger::init();
 
-    let mut app = App::new()?;
-    app.add_task(Arc::new(Log));
+    let app = App::new()?;
 
     app.start().await
 }
