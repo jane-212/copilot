@@ -5,7 +5,7 @@ use lettre::{
     AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor,
 };
 
-pub(crate) struct Mailer {
+pub struct Mailer {
     client: AsyncSmtpTransport<Tokio1Executor>,
     from: Mailbox,
     to: Mailbox,

@@ -4,11 +4,10 @@ use anyhow::Result;
 use async_trait::async_trait;
 use tera::Context;
 
-use crate::app::Helper;
+use super::Task;
+use crate::helper::Helper;
 
-use super::app::Task;
-
-pub(crate) struct Log;
+pub struct Log;
 
 #[async_trait]
 impl Task for Log {
@@ -27,9 +26,11 @@ impl Task for Log {
         };
         let mut context = Context::new();
         context.insert("logs", &logs);
-        context.insert("count", &7);
         let log_html = helper.tera.render("log.html", &context)?;
-        helper.mailer.send("Log summary", log_html).await?;
+        helper
+            .mailer
+            .send("Log summary for last 7 days", log_html)
+            .await?;
 
         Ok(())
     }

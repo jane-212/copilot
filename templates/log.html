@@ -17,24 +17,25 @@
     margin-top: 0;
     margin-bottom: 0;
 }
-.title {
-    font-weight: bold;
-    text-align: center;
-}
 </style>
 {% endblock head %}
 
 {% block body %}
-<p class="title">过去{{count}}天的日志</p>
 {% for log in logs %}
     {% if log.level == "error" %}
-        <p class="error log">{{log.content}}</p>
+        <p class="log">
+            [{{ log.time | date(format="%Y-%m-%d %H:%M:%S", timezone="Asia/Shanghai") }} <span class="error">{{log.level | upper }}</span>]: {{log.content}}
+        </p>
     {% endif %}
     {% if log.level == "warn" %}
-        <p class="warn log">{{log.content}}</p>
+        <p class="log">
+            [{{ log.time | date(format="%Y-%m-%d %H:%M:%S", timezone="Asia/Shanghai") }} <span class="warn">{{log.level | upper }}</span>]: {{log.content}}
+        </p>
     {% endif %}
     {% if log.level == "info" %}
-        <p class="info log">{{log.content}}</p>
+        <p class="log">
+            [{{ log.time | date(format="%Y-%m-%d %H:%M:%S", timezone="Asia/Shanghai") }} <span class="info">{{log.level | upper }}</span>]: {{log.content}}
+        </p>
     {% endif %}
 {% endfor %}
 {% endblock body %}

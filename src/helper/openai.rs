@@ -6,7 +6,7 @@ use async_openai::types::{
 };
 use async_openai::Client;
 
-pub(crate) struct Openai {
+pub struct Openai {
     client: Client<OpenAIConfig>,
     model: String,
 }
