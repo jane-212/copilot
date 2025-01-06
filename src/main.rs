@@ -8,7 +8,7 @@ use env_logger::Builder;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    dotenv()?;
+    dotenv().ok();
     Builder::from_default_env().format_target(false).init();
 
     let mut app = App::new()?;
