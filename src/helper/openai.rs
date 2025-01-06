@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{anyhow, Context, Result};
 use async_openai::config::OpenAIConfig;
 use async_openai::types::{
     ChatCompletionRequestSystemMessageArgs, ChatCompletionRequestUserMessageArgs,
@@ -50,7 +50,8 @@ impl Openai {
             .into_iter()
             .next()
             .and_then(|choice| choice.message.content)
-            .unwrap_or_default();
+            .ok_or(anyhow!("no choice in response message"))
+            .context(format!("in model {}", self.model))?;
 
         Ok(reply)
     }
