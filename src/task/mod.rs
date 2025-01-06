@@ -1,3 +1,5 @@
+pub mod github;
+
 use std::sync::Arc;
 
 use anyhow::Result;

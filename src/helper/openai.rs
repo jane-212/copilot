@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use anyhow::{anyhow, Context, Result};
 use async_openai::config::OpenAIConfig;
 use async_openai::types::{
@@ -14,22 +12,14 @@ pub struct Openai {
 }
 
 impl Openai {
-    pub fn new(
-        base: impl Into<String>,
-        model: impl Into<String>,
-        key: impl Into<String>,
-    ) -> Result<Self> {
+    pub fn new(base: impl Into<String>, model: impl Into<String>, key: impl Into<String>) -> Self {
         let config = OpenAIConfig::new().with_api_base(base).with_api_key(key);
-        let client = reqwest::Client::builder()
-            .timeout(Duration::from_secs(10))
-            .build()?;
-        let client = Client::with_config(config).with_http_client(client);
-        let openai = Self {
+        let client = Client::with_config(config);
+
+        Self {
             client,
             model: model.into(),
-        };
-
-        Ok(openai)
+        }
     }
 
     pub async fn chat(

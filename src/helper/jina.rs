@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use anyhow::Result;
 use reqwest::Client;
 
@@ -8,17 +6,29 @@ pub struct Jina {
 }
 
 impl Jina {
-    pub fn new() -> Result<Self> {
-        let client = Client::builder().timeout(Duration::from_secs(10)).build()?;
-        let jina = Self { client };
+    pub fn new() -> Self {
+        let client = Client::new();
 
-        Ok(jina)
+        Self { client }
     }
 
-    pub async fn summary(&self, url: impl AsRef<str>) -> Result<String> {
+    pub async fn summary(
+        &self,
+        url: impl AsRef<str>,
+        includes: impl Into<Vec<&str>>,
+        excludes: impl Into<Vec<&str>>,
+    ) -> Result<String> {
         let url = url.as_ref();
         let url = format!("https://r.jina.ai/{}", url);
-        let summary = self.client.get(url).send().await?.text().await?;
+        let summary = self
+            .client
+            .get(url)
+            .header("X-Target-Selector", includes.into().join(", "))
+            .header("X-Remove-Selector", excludes.into().join(", "))
+            .send()
+            .await?
+            .text()
+            .await?;
 
         Ok(summary)
     }

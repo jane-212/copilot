@@ -24,7 +24,7 @@ impl Helper {
         let openai = Self::new_openai()?;
         let deep_seek = Self::new_deep_seek()?;
         let tera = Self::new_tera()?;
-        let jina = Jina::new()?;
+        let jina = Jina::new();
         let helper = Self {
             mailer,
             openai,
@@ -49,7 +49,7 @@ impl Helper {
     fn new_deep_seek() -> Result<Openai> {
         let deep_seek_key = env::var("DEEP_SEEK_KEY")?;
         log::info!("found deep seek key");
-        let deep_seek = Openai::new("https://api.deepseek.com", "deepseek-chat", deep_seek_key)?;
+        let deep_seek = Openai::new("https://api.deepseek.com", "deepseek-chat", deep_seek_key);
 
         Ok(deep_seek)
     }
@@ -61,7 +61,7 @@ impl Helper {
             "https://models.inference.ai.azure.com",
             "gpt-4o",
             openai_key,
-        )?;
+        );
 
         Ok(openai)
     }
