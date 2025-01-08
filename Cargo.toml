@@ -6,7 +6,6 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.95"
 async-openai = "0.26.0"
-async-trait = "0.1.84"
 chrono-tz = "0.10.0"
 dotenvy = "0.15.7"
 lettre = { version = "0.11.11", default-features = false, features = ["builder", "smtp-transport", "tokio1-rustls-tls"] }
