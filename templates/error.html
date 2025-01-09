@@ -1,34 +1,30 @@
-{% extends "base.html" %}
-
-{% block head %}
+{% extends "base.html" %} {% block head %}
 <style>
-.container {
-    border: 1px dashed #ff2e63;
-    padding: 1rem;
-    border-radius: 10px;
-}
-.line {
-    white-space: pre-wrap;
-}
-.title {
-    text-align: center;
-    font-weight: bold;
-    color: #ff2e63;
-    font-size: x-large;
-}
-.content {
-    margin-top: 1rem;
-}
+    .container {
+        border: 1px dashed #ff2e63;
+        padding: 1rem;
+        border-radius: 10px;
+    }
+    .line {
+        white-space: pre-wrap;
+    }
+    .title {
+        text-align: center;
+        font-weight: bold;
+        color: #ff2e63;
+        font-size: x-large;
+    }
+    .content {
+        margin-top: 1rem;
+    }
 </style>
-{% endblock head %}
-
-{% block body %}
+{% endblock head %} {% block body %}
 <div>
     <p class="title">发生了一些错误</p>
 </div>
 <div class="container content">
-{% for line in error_lines %}
+    {% for line in error_lines %}
     <p class="line">{{line}}</p>
-{% endfor %}
+    {% endfor %}
 </div>
 {% endblock body %}

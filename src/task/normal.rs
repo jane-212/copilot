@@ -90,12 +90,6 @@ impl Normal {
 }
 
 impl Task for Normal {
-    #[cfg(debug_assertions)]
-    fn job(&self) -> &'static str {
-        "*/5 * * * * *"
-    }
-
-    #[cfg(not(debug_assertions))]
     fn job(&self) -> &'static str {
         "0 0 6 * * *"
     }
