@@ -12,6 +12,7 @@ use tracing_subscriber::EnvFilter;
 #[tokio::main]
 async fn main() -> Result<()> {
     dotenv().ok();
+
     let local_time = OffsetTime::new(
         UtcOffset::from_hms(8, 0, 0)?,
         format_description!("[year]-[month]-[day] [hour]:[minute]:[second]"),
@@ -22,7 +23,7 @@ async fn main() -> Result<()> {
         .init();
 
     let mut app = App::new()?;
-    app.add_task(Arc::new(Normal));
+    app.add_task(|helper| Arc::new(Normal::new(helper)));
 
     app.start().await
 }

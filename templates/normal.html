@@ -2,15 +2,45 @@
 
 {% block head %}
 <style>
-.date {
-    width: 100%;
+.daily {
+    border: 1px dashed #95e1d3;
+    padding: 0.7rem;
+    border-radius: 10px;
+}
+.daily-content {
+    font-weight: bold;
+}
+.it {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+.it-index {
+}
+.it-url {
+    text-decoration: none;
+}
+.title {
+    text-align: center;
+    font-weight: bold;
+    font-size: large;
+}
+hr {
+    border: none;
+    border-top: 1px dashed #95e1d3;
 }
 </style>
 {% endblock head %}
 
 {% block body %}
-<div>
-    <img class="date" src="{{date_image | safe}}" />
-    <p>hello</p>
+<div class="daily">
+    <p class="daily-content">{{daily.en}}</p>
+    <p class="daily-content">{{daily.zh}}</p>
+</div>
+<div class="it">
+    <p class="title">热门IT资讯</p>
+    <hr />
+    {% for new in it %}
+    <p><span class="it-index">{{new.index}}. <span><a class="it-url" href="{{new.url | safe}}">{{new.title}}</a></p>
+    {% endfor %}
 </div>
 {% endblock body %}

@@ -23,8 +23,8 @@ impl App {
         Ok(app)
     }
 
-    pub fn add_task(&mut self, task: Arc<dyn Task>) {
-        self.tasks.push(task);
+    pub fn add_task(&mut self, handler: impl FnOnce(Arc<Helper>) -> Arc<dyn Task>) {
+        self.tasks.push(handler(self.helper.clone()));
     }
 
     fn all_tasks(&self) -> Vec<Arc<dyn Task>> {
@@ -33,11 +33,13 @@ impl App {
 
     async fn send_error(helper: Arc<Helper>, error: Error) -> Result<()> {
         log::info!("开始发送错误邮件");
-        let mut context = tera::Context::new();
         let error = format!("{error:?}");
         let error_lines = error.lines().collect::<Vec<_>>();
+
+        let mut context = tera::Context::new();
         context.insert("error_lines", &error_lines);
         let error_html = helper.tera.render("error.html", &context)?;
+
         helper.mailer.send("检测到错误", error_html).await?;
         log::info!("错误邮件发送成功");
 
@@ -47,6 +49,7 @@ impl App {
     pub async fn start(self) -> Result<()> {
         log::info!("正在启动...");
         log::info!("当前版本: {}", env!("VERSION"));
+
         let mut sched = JobScheduler::new().await?;
         let tasks = self.all_tasks();
         log::info!("一共发现{}个任务", tasks.len());
@@ -64,7 +67,7 @@ impl App {
                         Box::pin(async move {
                             log::info!("任务开始: {}", task.description());
                             match task
-                                .run(helper.clone())
+                                .run()
                                 .await
                                 .context(format!("任务失败: {}", task.description()))
                             {
