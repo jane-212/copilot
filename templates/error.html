@@ -1,8 +1,35 @@
 {% extends "base.html" %}
 
 {% block head %}
+<style>
+.container {
+    border: 1px solid #ff2e63;
+    border-style: dashed;
+    padding: 1rem;
+    border-radius: 10px;
+}
+.line {
+    white-space: pre-wrap;
+}
+.title {
+    text-align: center;
+    font-weight: bold;
+    color: #ff2e63;
+    font-size: x-large;
+}
+.content {
+    margin-top: 1rem;
+}
+</style>
 {% endblock head %}
 
 {% block body %}
-{{error | linebreaksbr}}
+<div>
+    <p class="title">发生了一些错误</p>
+</div>
+<div class="container content">
+{% for line in error_lines %}
+    <p class="line">{{line}}</p>
+{% endfor %}
+</div>
 {% endblock body %}

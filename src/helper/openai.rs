@@ -45,8 +45,8 @@ impl Openai {
             .into_iter()
             .next()
             .and_then(|choice| choice.message.content)
-            .ok_or(anyhow!("no choice in response message"))
-            .context(format!("in model {}", self.model))?;
+            .ok_or(anyhow!("模型没有回复"))
+            .context(format!("正在使用模型: {}", self.model))?;
 
         Ok(reply)
     }

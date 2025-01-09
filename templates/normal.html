@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+.date {
+    width: 100%;
+}
+</style>
+{% endblock head %}
+
+{% block body %}
+<div>
+    <img class="date" src="{{date_image | safe}}" />
+    <p>hello</p>
+</div>
+{% endblock body %}

@@ -32,24 +32,26 @@ impl App {
     }
 
     async fn send_error(helper: Arc<Helper>, error: Error) -> Result<()> {
-        log::info!("start send error to email");
+        log::info!("开始发送错误邮件");
         let mut context = tera::Context::new();
-        context.insert("error", &format!("{error:?}"));
+        let error = format!("{error:?}");
+        let error_lines = error.lines().collect::<Vec<_>>();
+        context.insert("error_lines", &error_lines);
         let error_html = helper.tera.render("error.html", &context)?;
-        helper.mailer.send("Error detected", error_html).await?;
-        log::info!("send error to email completed");
+        helper.mailer.send("检测到错误", error_html).await?;
+        log::info!("错误邮件发送成功");
 
         Ok(())
     }
 
     pub async fn start(self) -> Result<()> {
-        log::info!("start app...");
-        log::info!("app version: {}", env!("VERSION"));
+        log::info!("正在启动...");
+        log::info!("当前版本: {}", env!("VERSION"));
         let mut sched = JobScheduler::new().await?;
         let tasks = self.all_tasks();
-        log::info!("totally found {} tasks", tasks.len());
+        log::info!("一共发现{}个任务", tasks.len());
         for task in tasks {
-            log::info!("add new job: {}({})", task.description(), task.job());
+            log::info!("正在添加任务: {}({})", task.description(), task.job());
             let job = JobBuilder::new()
                 .with_timezone(chrono_tz::Asia::Shanghai)
                 .with_cron_job_type()
@@ -60,18 +62,18 @@ impl App {
                         let task = task.clone();
                         let helper = helper.clone();
                         Box::pin(async move {
-                            log::info!("start {}", task.description());
+                            log::info!("任务开始: {}", task.description());
                             match task
                                 .run(helper.clone())
                                 .await
-                                .context(format!("failed when {}", task.description()))
+                                .context(format!("任务失败: {}", task.description()))
                             {
-                                Ok(_) => log::info!("finished {}", task.description()),
+                                Ok(_) => log::info!("任务完成: {}", task.description()),
                                 Err(error) => {
                                     log::error!("\n{error:?}");
                                     if let Err(err) = Self::send_error(helper, error)
                                         .await
-                                        .context("send error to email")
+                                        .context("发送错误邮箱")
                                     {
                                         log::error!("\n{err:?}");
                                     }
@@ -83,19 +85,19 @@ impl App {
                 .build()?;
             sched.add(job).await?;
         }
-        log::info!("app started and wait for quit signal...");
+        log::info!("启动成功, 正在监听停止信号...");
         sched.start().await?;
 
         let mut terminate = signal(SignalKind::terminate())?;
         tokio::select! {
             _ = terminate.recv() => (),
         }
-        log::info!("received terminate signal");
+        log::info!("收到停止信号");
 
-        log::info!("shutdown app...");
+        log::info!("正在退出...");
         sched.shutdown().await?;
 
-        log::info!("shutdown app successfully");
+        log::info!("退出成功");
         Ok(())
     }
 }
