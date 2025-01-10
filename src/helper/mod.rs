@@ -10,6 +10,16 @@ use mail::Mailer;
 use openai::Openai;
 use tera::Tera;
 
+macro_rules! templates {
+    ($($name:expr),*) => {
+        [
+            $(
+                ($name, include_str!(concat!("../../templates/", $name))),
+            )*
+        ]
+    };
+}
+
 pub struct Helper {
     pub mailer: Mailer,
     pub openai: Openai,
@@ -37,11 +47,7 @@ impl Helper {
     }
 
     fn new_tera() -> Result<Tera> {
-        let templates = [
-            ("base.html", include_str!("../../templates/base.html")),
-            ("error.html", include_str!("../../templates/error.html")),
-            ("normal.html", include_str!("../../templates/normal.html")),
-        ];
+        let templates = templates!("base.html", "error.html", "normal.html");
         let mut tera = Tera::default();
         for (name, content) in templates {
             log::info!("添加模版: {name}");
