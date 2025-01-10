@@ -60,7 +60,11 @@ impl Helper {
     fn new_deep_seek() -> Result<Openai> {
         let deep_seek_key = env::var("DEEP_SEEK_KEY")?;
         log::info!("找到了deep seek key");
-        let deep_seek = Openai::new("https://api.deepseek.com", "deepseek-chat", deep_seek_key);
+        let deep_seek = Openai::builder()
+            .base("https://api.deepseek.com")
+            .model("deepseek-chat")
+            .key(deep_seek_key)
+            .build();
 
         Ok(deep_seek)
     }
@@ -68,11 +72,11 @@ impl Helper {
     fn new_openai() -> Result<Openai> {
         let openai_key = env::var("OPENAI_KEY")?;
         log::info!("找到了openai key");
-        let openai = Openai::new(
-            "https://models.inference.ai.azure.com",
-            "gpt-4o",
-            openai_key,
-        );
+        let openai = Openai::builder()
+            .base("https://models.inference.ai.azure.com")
+            .model("gpt-4o")
+            .key(openai_key)
+            .build();
 
         Ok(openai)
     }
@@ -83,13 +87,13 @@ impl Helper {
         let username = env::var("MAIL_USERNAME")?;
         log::info!("找到了mail username: {}", username);
         let password = env::var("MAIL_PASSWORD")?;
-        let mailer = Mailer::new(
-            format!("Bot <{username}>"),
-            to,
-            "smtp.163.com",
-            username,
-            password,
-        )?;
+        let mailer = Mailer::builder()
+            .from(format!("Bot <{username}>"))
+            .to(to)
+            .server("smtp.163.com")
+            .username(username)
+            .password(password)
+            .build()?;
 
         Ok(mailer)
     }

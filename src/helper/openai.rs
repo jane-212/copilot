@@ -5,13 +5,16 @@ use async_openai::types::{
     ChatCompletionRequestUserMessageContent, CreateChatCompletionRequestArgs,
 };
 use async_openai::Client;
+use bon::bon;
 
 pub struct Openai {
     client: Client<OpenAIConfig>,
     model: String,
 }
 
+#[bon]
 impl Openai {
+    #[builder]
     pub fn new(base: impl Into<String>, model: impl Into<String>, key: impl Into<String>) -> Self {
         let config = OpenAIConfig::new().with_api_base(base).with_api_key(key);
         let client = Client::with_config(config);

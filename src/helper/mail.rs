@@ -1,4 +1,5 @@
 use anyhow::Result;
+use bon::bon;
 use lettre::{
     message::{header::ContentType, IntoBody, Mailbox},
     transport::smtp::authentication::Credentials,
@@ -11,16 +12,18 @@ pub struct Mailer {
     to: Mailbox,
 }
 
+#[bon]
 impl Mailer {
+    #[builder]
     pub fn new(
         from: impl AsRef<str>,
         to: impl AsRef<str>,
-        smtp_host: impl AsRef<str>,
+        server: impl AsRef<str>,
         username: impl Into<String>,
         password: impl Into<String>,
     ) -> Result<Self> {
         let creds = Credentials::new(username.into(), password.into());
-        let client = AsyncSmtpTransport::<Tokio1Executor>::relay(smtp_host.as_ref())?
+        let client = AsyncSmtpTransport::<Tokio1Executor>::relay(server.as_ref())?
             .credentials(creds)
             .build();
         let from = from.as_ref().parse()?;
