@@ -1,45 +1,38 @@
 {% extends "base.html" %} {% block head %}
 <style>
-    .daily {
+    .container {
         border: 1px dashed #95e1d3;
-        padding: 0.7rem;
+        padding: 1rem;
         border-radius: 10px;
-    }
-    .daily-content {
-        font-weight: bold;
-    }
-    .it {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-    }
-    .it-index {
-    }
-    .it-url {
-        text-decoration: none;
     }
     .title {
         text-align: center;
         font-weight: bold;
-        font-size: large;
+        color: #95e1d3;
+        font-size: x-large;
     }
-    hr {
-        border: none;
-        border-top: 1px dashed #95e1d3;
+    .content {
+        margin-top: 1rem;
+    }
+    a {
+        text-decoration: none;
     }
 </style>
 {% endblock head %} {% block body %}
-<div class="daily">
-    <p class="daily-content">{{daily.en}}</p>
-    <p class="daily-content">{{daily.zh}}</p>
+<div>
+    <p class="title">每日一句</p>
 </div>
-<div class="it">
+<div class="container content">
+    <p>{{daily.en}}</p>
+    <p>{{daily.zh}}</p>
+</div>
+
+<div>
     <p class="title">热门IT资讯</p>
-    <hr />
+</div>
+<div class="container content">
     {% for new in it %}
-    <p>
-        <span class="it-index">{{new.index}}. </span
-        ><a class="it-url" href="{{new.url | safe}}">{{new.title}}</a>
-    </p>
+    <p>{{new.index}}. <a href="{{new.url | safe}}">{{new.title}}</a></p>
     {% endfor %}
 </div>
 {% endblock body %}
