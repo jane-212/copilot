@@ -1,6 +1,7 @@
-use std::{future::Future, pin::Pin, sync::Arc};
+use std::sync::Arc;
 
 use anyhow::{bail, Result};
+use futures::future::BoxFuture;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use tera::Context;
@@ -98,7 +99,7 @@ impl Task for Normal {
         "发送每日一句和IT资讯"
     }
 
-    fn run(&self) -> Pin<Box<dyn Future<Output = Result<()>> + '_ + Send>> {
+    fn run(&self) -> BoxFuture<Result<()>> {
         Box::pin(async move {
             let context = Context::new();
             let context = self.daily(context).await?;
