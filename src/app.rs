@@ -1,11 +1,13 @@
 use std::sync::Arc;
 
 use anyhow::{Context, Error, Result};
+use askama::Template;
 use tokio::signal::unix::{signal, SignalKind};
 use tokio_cron_scheduler::{JobBuilder, JobScheduler};
 
 use super::helper::Helper;
 use super::task::Task;
+use super::templates;
 
 pub struct App {
     helper: Arc<Helper>,
@@ -36,9 +38,10 @@ impl App {
         let error = format!("{error:?}");
         let error_lines = error.lines().collect::<Vec<_>>();
 
-        let mut context = tera::Context::new();
-        context.insert("error_lines", &error_lines);
-        let error_html = helper.tera.render("error.html", &context)?;
+        let error_html = templates::Error::builder()
+            .error_lines(error_lines)
+            .build()
+            .render()?;
 
         helper.mailer.send("检测到错误", error_html).await?;
         log::info!("错误邮件发送成功");

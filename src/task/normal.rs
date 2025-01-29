@@ -1,13 +1,14 @@
 use std::sync::Arc;
 
 use anyhow::{bail, Result};
+use askama::Template;
 use futures::future::BoxFuture;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use tera::Context;
 
 use super::Task;
 use crate::helper::Helper;
+use crate::templates;
 
 pub struct Normal {
     helper: Arc<Helper>,
@@ -21,7 +22,7 @@ impl Normal {
         Self { client, helper }
     }
 
-    async fn daily(&self, mut context: Context) -> Result<Context> {
+    async fn daily(&self) -> Result<(String, String)> {
         #[derive(Deserialize)]
         struct Response {
             success: bool,
@@ -47,12 +48,10 @@ impl Normal {
             bail!("接口请求失败: {url}");
         }
 
-        context.insert("daily", &response.data);
-
-        Ok(context)
+        Ok((response.data.zh, response.data.en))
     }
 
-    async fn it(&self, mut context: Context) -> Result<Context> {
+    async fn it(&self) -> Result<Vec<templates::New>> {
         #[allow(unused)]
         #[derive(Deserialize)]
         struct Response {
@@ -84,9 +83,16 @@ impl Normal {
             bail!("接口请求失败: {url}");
         }
 
-        context.insert("it", &response.data);
-
-        Ok(context)
+        Ok(response
+            .data
+            .into_iter()
+            .map(|new| {
+                templates::New::builder()
+                    .index(new.index)
+                    .title(new.title)
+                    .build()
+            })
+            .collect())
     }
 }
 
@@ -101,10 +107,14 @@ impl Task for Normal {
 
     fn run(&self) -> BoxFuture<Result<()>> {
         Box::pin(async move {
-            let context = Context::new();
-            let context = self.daily(context).await?;
-            let context = self.it(context).await?;
-            let html = self.helper.tera.render("normal.html", &context)?;
+            let (zh, en) = self.daily().await?;
+            let news = self.it().await?;
+            let html = templates::Normal::builder()
+                .zh(&zh)
+                .en(&en)
+                .news(news)
+                .build()
+                .render()?;
 
             self.helper.mailer.send("Normal", html).await?;
 

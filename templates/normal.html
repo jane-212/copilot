@@ -20,15 +20,15 @@
     <p class="title">每日一句</p>
 </div>
 <div class="container content">
-    <p>{{daily.en}}</p>
-    <p>{{daily.zh}}</p>
+    <p>{{en}}</p>
+    <p>{{zh}}</p>
 </div>
 
 <div>
     <p class="title">热门IT资讯</p>
 </div>
 <div class="container content">
-    {% for new in it %}
+    {% for new in news %}
     <p>{{new.index}}. {{new.title}}</p>
     {% endfor %}
 </div>
