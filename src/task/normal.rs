@@ -112,7 +112,7 @@ impl Task for Normal {
             let html = templates::Normal::builder()
                 .zh(&zh)
                 .en(&en)
-                .news(news)
+                .news(&news)
                 .build()
                 .render()?;
 
