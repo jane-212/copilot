@@ -94,6 +94,31 @@ impl Normal {
             })
             .collect())
     }
+
+    async fn javcap(&self) -> Result<(u32, i64)> {
+        let star_cnt = self
+            .helper
+            .github
+            .repos("jane-212", "javcap")
+            .get()
+            .await?
+            .stargazers_count
+            .unwrap_or_default();
+        let download_cnt = self
+            .helper
+            .github
+            .repos("jane-212", "javcap")
+            .releases()
+            .list()
+            .send()
+            .await?
+            .into_iter()
+            .flat_map(|release| release.assets)
+            .map(|asset| asset.download_count)
+            .sum::<i64>();
+
+        Ok((star_cnt, download_cnt))
+    }
 }
 
 impl Task for Normal {
@@ -102,16 +127,19 @@ impl Task for Normal {
     }
 
     fn description(&self) -> &'static str {
-        "发送每日一句和IT资讯"
+        "发送日常资讯"
     }
 
     fn run(&self) -> BoxFuture<Result<()>> {
         Box::pin(async move {
             let (zh, en) = self.daily().await?;
             let news = self.it().await?;
+            let (star, download) = self.javcap().await?;
             let html = templates::Normal::builder()
                 .zh(&zh)
                 .en(&en)
+                .star(star)
+                .download(download)
                 .news(&news)
                 .build()
                 .render()?;

@@ -6,6 +6,8 @@ use bon::bon;
 pub struct Normal<'a> {
     zh: &'a str,
     en: &'a str,
+    star: u32,
+    download: i64,
     news: &'a [New],
 }
 
@@ -25,7 +27,13 @@ impl New {
 #[bon]
 impl<'a> Normal<'a> {
     #[builder]
-    pub fn new(zh: &'a str, en: &'a str, news: &'a [New]) -> Normal<'a> {
-        Normal { zh, en, news }
+    pub fn new(zh: &'a str, en: &'a str, star: u32, download: i64, news: &'a [New]) -> Normal<'a> {
+        Normal {
+            zh,
+            en,
+            star,
+            download,
+            news,
+        }
     }
 }

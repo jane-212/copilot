@@ -7,6 +7,7 @@ use std::env;
 use anyhow::Result;
 use jina::Jina;
 use mail::Mailer;
+use octocrab::Octocrab;
 use openai::Openai;
 
 pub struct Helper {
@@ -14,6 +15,7 @@ pub struct Helper {
     pub openai: Openai,
     pub deep_seek: Openai,
     pub jina: Jina,
+    pub github: Octocrab,
 }
 
 impl Helper {
@@ -21,15 +23,25 @@ impl Helper {
         let mailer = Self::new_mailer()?;
         let openai = Self::new_openai()?;
         let deep_seek = Self::new_deep_seek()?;
+        let github = Self::new_github()?;
         let jina = Jina::new();
         let helper = Self {
             mailer,
             openai,
             deep_seek,
             jina,
+            github,
         };
 
         Ok(helper)
+    }
+
+    fn new_github() -> Result<Octocrab> {
+        let github_token = env::var("GITHUB_TOKEN")?;
+        log::info!("找到了github token");
+        let github = Octocrab::builder().personal_token(github_token).build()?;
+
+        Ok(github)
     }
 
     fn new_deep_seek() -> Result<Openai> {
