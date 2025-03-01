@@ -32,3 +32,9 @@ tracing-subscriber = { version = "0.3.19", features = [
     "env-filter",
     "local-time",
 ] }
+self_update = { version = "0.39.0", default-features = false, features = [
+    "archive-tar",
+    "archive-zip",
+    "rustls",
+    "compression-flate2",
+] }
