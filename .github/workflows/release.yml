@@ -56,13 +56,6 @@ jobs:
             rust: stable
             target: x86_64-apple-darwin
 
-          - os: windows-latest
-            rust: stable
-            target: x86_64-pc-windows-msvc
-          - os: windows-latest
-            rust: stable
-            target: aarch64-pc-windows-msvc
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
