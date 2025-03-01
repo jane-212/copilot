@@ -3,37 +3,15 @@ use bon::bon;
 
 #[derive(Template)]
 #[template(path = "normal.html")]
-pub struct Normal<'a> {
-    zh: &'a str,
-    en: &'a str,
+pub struct Normal {
     star: u32,
     download: i64,
-    news: &'a [New],
-}
-
-pub struct New {
-    index: usize,
-    title: String,
 }
 
 #[bon]
-impl New {
+impl Normal {
     #[builder]
-    pub fn new(index: usize, title: String) -> New {
-        New { index, title }
-    }
-}
-
-#[bon]
-impl<'a> Normal<'a> {
-    #[builder]
-    pub fn new(zh: &'a str, en: &'a str, star: u32, download: i64, news: &'a [New]) -> Normal<'a> {
-        Normal {
-            zh,
-            en,
-            star,
-            download,
-            news,
-        }
+    pub fn new(star: u32, download: i64) -> Normal {
+        Normal { star, download }
     }
 }

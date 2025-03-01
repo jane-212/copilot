@@ -17,27 +17,10 @@
 </style>
 {% endblock head %} {% block body %}
 <div>
-    <p class="title">每日一句</p>
-</div>
-<div class="container content">
-    <p>{{en}}</p>
-    <p>{{zh}}</p>
-</div>
-
-<div>
     <p class="title">javcap</p>
 </div>
 <div class="container content">
     <p>🌟 {{star}}</p>
     <p>📦 {{download}}</p>
-</div>
-
-<div>
-    <p class="title">热门IT资讯</p>
-</div>
-<div class="container content">
-    {% for new in news %}
-    <p>{{new.index}}. {{new.title}}</p>
-    {% endfor %}
 </div>
 {% endblock body %}

@@ -25,8 +25,15 @@ impl App {
         Ok(app)
     }
 
-    pub fn add_task(&mut self, handler: impl FnOnce(Arc<Helper>) -> Arc<dyn Task>) {
-        self.tasks.push(handler(self.helper.clone()));
+    pub fn add_task(
+        &mut self,
+        handler: impl FnOnce(Arc<Helper>) -> Result<Arc<dyn Task>>,
+    ) -> Result<()> {
+        let helper = self.helper.clone();
+        let task = handler(helper)?;
+        self.tasks.push(task);
+
+        Ok(())
     }
 
     fn all_tasks(&self) -> Vec<Arc<dyn Task>> {

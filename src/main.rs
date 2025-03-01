@@ -23,7 +23,11 @@ async fn main() -> Result<()> {
         .init();
 
     let mut app = App::new()?;
-    app.add_task(|helper| Arc::new(Normal::new(helper)));
+    app.add_task(|helper| {
+        let normal = Normal::new(helper)?;
+        let task = Arc::new(normal);
+        Ok(task)
+    })?;
 
     app.start().await
 }
