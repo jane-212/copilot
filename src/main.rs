@@ -48,10 +48,8 @@ fn check_for_update() -> Result<Status> {
         .show_output(false)
         .show_download_progress(false)
         .current_version(env!("VERSION"))
-        .build()
-        .with_context(|| "build update config")?
-        .update()
-        .with_context(|| "self update")?;
+        .build()?
+        .update()?;
 
     Ok(status)
 }
