@@ -4,7 +4,9 @@ use anyhow::Result;
 use copilot::task::normal::Normal;
 use copilot::App;
 use dotenvy::dotenv;
+#[cfg(not(debug_assertions))]
 use self_update::backends::github::Update;
+#[cfg(not(debug_assertions))]
 use self_update::Status;
 use time::macros::format_description;
 use time::UtcOffset;
@@ -24,9 +26,12 @@ async fn main() -> Result<()> {
         .with_timer(local_time)
         .init();
 
-    let status = tokio::task::spawn_blocking(check_for_update).await??;
-    if status.updated() {
-        return Ok(());
+    #[cfg(not(debug_assertions))]
+    {
+        let status = tokio::task::spawn_blocking(check_for_update).await??;
+        if status.updated() {
+            return Ok(());
+        }
     }
 
     let mut app = App::new()?;
@@ -39,6 +44,7 @@ async fn main() -> Result<()> {
     app.start().await
 }
 
+#[cfg(not(debug_assertions))]
 fn check_for_update() -> Result<Status> {
     let status = Update::configure()
         .repo_owner("jane-212")
