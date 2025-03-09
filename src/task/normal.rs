@@ -55,9 +55,16 @@ impl Task for Normal {
     fn run(&self) -> BoxFuture<Result<()>> {
         Box::pin(async move {
             let (star, download) = self.javcap().await?;
+            let challenge = self
+                .helper
+                .deep_seek
+                .chat("请给我随机推荐两个外出随机挑战")
+                .await?;
+            let challenge = markdown::to_html(&challenge);
             let html = templates::Normal::builder()
                 .star(star)
                 .download(download)
+                .challenge(&challenge)
                 .build()
                 .render()?;
 

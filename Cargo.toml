@@ -38,3 +38,4 @@ self_update = { version = "0.39.0", default-features = false, features = [
     "rustls",
     "compression-flate2",
 ] }
+markdown = "0.3.0"
