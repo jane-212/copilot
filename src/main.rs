@@ -51,8 +51,6 @@ fn check_for_update() -> Result<Status> {
         .repo_name("copilot")
         .bin_name("copilot")
         .no_confirm(true)
-        .show_output(false)
-        .show_download_progress(false)
         .current_version(env!("VERSION"))
         .build()?
         .update()?;
