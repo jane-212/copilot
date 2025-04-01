@@ -1,3 +1,4 @@
+use std::fmt::{self, Display};
 use std::sync::Arc;
 
 use anyhow::Result;
@@ -43,13 +44,15 @@ impl Normal {
     }
 }
 
+impl Display for Normal {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "发送日常资讯")
+    }
+}
+
 impl Task for Normal {
     fn job(&self) -> &'static str {
         "0 0 6 * * *"
-    }
-
-    fn description(&self) -> &'static str {
-        "发送日常资讯"
     }
 
     fn run(&self) -> BoxFuture<Result<()>> {

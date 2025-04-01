@@ -64,24 +64,21 @@ impl App {
         let tasks = self.all_tasks();
         log::info!("一共发现{}个任务", tasks.len());
         for task in tasks {
-            log::info!("正在添加任务: {}({})", task.description(), task.job());
+            let cron = task.job();
+            log::info!("正在添加任务: {task}({cron})");
             let job = JobBuilder::new()
                 .with_timezone(chrono_tz::Asia::Shanghai)
                 .with_cron_job_type()
-                .with_schedule(task.job())?
+                .with_schedule(cron)?
                 .with_run_async(Box::new({
                     let helper = self.helper.clone();
                     move |_, _| {
                         let task = task.clone();
                         let helper = helper.clone();
                         Box::pin(async move {
-                            log::info!("任务开始: {}", task.description());
-                            match task
-                                .run()
-                                .await
-                                .context(format!("任务失败: {}", task.description()))
-                            {
-                                Ok(_) => log::info!("任务完成: {}", task.description()),
+                            log::info!("任务开始: {task}");
+                            match task.run().await.context(format!("任务失败: {task}")) {
+                                Ok(_) => log::info!("任务完成: {task}"),
                                 Err(error) => {
                                     log::error!("\n{error:?}");
                                     if let Err(err) = Self::send_error(helper, error)
